@@ -1,4 +1,5 @@
 mod day01;
+mod day02;
 
 use std::fs;
 
@@ -18,6 +19,9 @@ fn main() {
     let answer = match (args.day, args.puzzle) {
         (1, 1) => day01::puzzle1(&input),
         (1, 2) => day01::puzzle2(&input),
+
+        (2, 1) => day02::puzzle1(&input),
+        (2, 2) => day02::puzzle2(&input),
 
         _ => panic!("no puzzle {} for day {}", args.puzzle, args.day),
     };
