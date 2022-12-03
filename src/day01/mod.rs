@@ -27,15 +27,26 @@ pub fn puzzle2(input: &str) -> i32 {
 mod tests {
     use super::*;
 
-    const INPUT: &str = include_str!("../input/day01.txt");
+    const EXAMPLE: &str = include_str!("example.txt");
+    const INPUT: &str = include_str!("input.txt");
 
     #[test]
-    fn test_puzzle1() {
+    fn test_puzzle1_example() {
+        assert_eq!(puzzle1(EXAMPLE), 24000);
+    }
+
+    #[test]
+    fn test_puzzle1_input() {
         assert_eq!(puzzle1(INPUT), 75622);
     }
 
     #[test]
-    fn test_puzzle2() {
+    fn test_puzzle2_example() {
+        assert_eq!(puzzle2(EXAMPLE), 45000);
+    }
+
+    #[test]
+    fn test_puzzle2_input() {
         assert_eq!(puzzle2(INPUT), 213159);
     }
 }
