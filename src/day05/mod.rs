@@ -1,13 +1,11 @@
 use regex::Regex;
 
-#[derive(Debug)]
 struct Move {
     quantity: usize,
     from: usize,
     to: usize,
 }
 
-#[derive(Debug)]
 struct Drawing {
     crates: Vec<Vec<char>>,
     moves: Vec<Move>,
