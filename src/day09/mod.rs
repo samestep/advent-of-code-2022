@@ -58,34 +58,27 @@ fn follow(h: Pos, t: &mut Pos) {
     }
 }
 
-pub fn puzzle1(input: &str) -> String {
+fn solve<const L: usize>(input: &str) -> String {
     let mut positions = HashSet::new();
-    let mut h = Pos { x: 0, y: 0 };
-    let mut t = Pos { x: 0, y: 0 };
-    positions.insert(t);
+    let mut rope = [Pos { x: 0, y: 0 }; L];
     for (d, n) in parse(input) {
         for _ in 0..n {
-            motion(d, &mut h);
-            follow(h, &mut t);
-            positions.insert(t);
+            motion(d, &mut rope[0]);
+            for i in 1..L {
+                follow(rope[i - 1], &mut rope[i]);
+            }
+            positions.insert(rope[L - 1]);
         }
     }
     positions.len().to_string()
 }
 
+pub fn puzzle1(input: &str) -> String {
+    solve::<2>(input)
+}
+
 pub fn puzzle2(input: &str) -> String {
-    let mut positions = HashSet::new();
-    let mut rope = [Pos { x: 0, y: 0 }; 10];
-    for (d, n) in parse(input) {
-        for _ in 0..n {
-            motion(d, &mut rope[0]);
-            for i in 1..rope.len() {
-                follow(rope[i - 1], &mut rope[i]);
-            }
-            positions.insert(rope[9]);
-        }
-    }
-    positions.len().to_string()
+    solve::<10>(input)
 }
 
 #[cfg(test)]
