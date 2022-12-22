@@ -9,6 +9,7 @@ mod day08;
 mod day09;
 mod day10;
 mod day11;
+mod day12;
 
 use std::fs;
 
@@ -58,6 +59,9 @@ fn main() {
 
         (11, 1) => day11::puzzle1(&input),
         (11, 2) => day11::puzzle2(&input),
+
+        (12, 1) => day12::puzzle1(&input),
+        (12, 2) => day12::puzzle2(&input),
 
         _ => panic!("no puzzle {} for day {}", args.puzzle, args.day),
     };
