@@ -12,6 +12,7 @@ mod day11;
 mod day12;
 mod day13;
 mod day14;
+mod day15;
 
 use std::fs;
 
@@ -22,6 +23,7 @@ struct Args {
     day: u8,
     puzzle: u8,
     input: String,
+    extra: Vec<String>,
 }
 
 fn main() {
@@ -70,6 +72,9 @@ fn main() {
 
         (14, 1) => day14::puzzle1(&input),
         (14, 2) => day14::puzzle2(&input),
+
+        (15, 1) => day15::puzzle1(&input, args.extra[0].parse().unwrap()),
+        (15, 2) => day15::puzzle2(&input, args.extra[0].parse().unwrap()),
 
         _ => panic!("no puzzle {} for day {}", args.puzzle, args.day),
     };
