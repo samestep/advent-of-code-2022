@@ -13,6 +13,7 @@ mod day12;
 mod day13;
 mod day14;
 mod day15;
+mod day16;
 
 use std::fs;
 
@@ -75,6 +76,8 @@ fn main() {
 
         (15, 1) => day15::puzzle1(&input, args.extra[0].parse().unwrap()).to_string(),
         (15, 2) => day15::puzzle2(&input, args.extra[0].parse().unwrap()).to_string(),
+
+        (16, 1) => day16::puzzle1(&input).to_string(),
 
         _ => panic!("no puzzle {} for day {}", args.puzzle, args.day),
     };
