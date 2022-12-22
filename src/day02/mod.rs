@@ -71,7 +71,7 @@ fn left_choice(left: Left) -> Choice {
     }
 }
 
-pub fn puzzle1(input: &str) -> String {
+pub fn puzzle1(input: &str) -> i32 {
     get_strats(input)
         .into_iter()
         .map(|Strat { left, right }| {
@@ -84,11 +84,10 @@ pub fn puzzle1(input: &str) -> String {
                 },
             })
         })
-        .sum::<i32>()
-        .to_string()
+        .sum()
 }
 
-pub fn puzzle2(input: &str) -> String {
+pub fn puzzle2(input: &str) -> i32 {
     get_strats(input)
         .into_iter()
         .map(|Strat { left, right }| {
@@ -106,8 +105,7 @@ pub fn puzzle2(input: &str) -> String {
                 },
             })
         })
-        .sum::<i32>()
-        .to_string()
+        .sum()
 }
 
 #[cfg(test)]
@@ -119,21 +117,21 @@ mod tests {
 
     #[test]
     fn test_puzzle1_example() {
-        assert_eq!(puzzle1(EXAMPLE), "15");
+        assert_eq!(puzzle1(EXAMPLE), 15);
     }
 
     #[test]
     fn test_puzzle1_input() {
-        assert_eq!(puzzle1(INPUT), "12458");
+        assert_eq!(puzzle1(INPUT), 12458);
     }
 
     #[test]
     fn test_puzzle2_example() {
-        assert_eq!(puzzle2(EXAMPLE), "12");
+        assert_eq!(puzzle2(EXAMPLE), 12);
     }
 
     #[test]
     fn test_puzzle2_input() {
-        assert_eq!(puzzle2(INPUT), "12683");
+        assert_eq!(puzzle2(INPUT), 12683);
     }
 }

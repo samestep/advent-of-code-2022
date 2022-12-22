@@ -99,11 +99,11 @@ fn get_total_small(fs: &Fs) -> usize {
     }
 }
 
-pub fn puzzle1(input: &str) -> String {
+pub fn puzzle1(input: &str) -> usize {
     let cmds = parse(input).unwrap();
     let mut root = HashMap::new();
     explore(&mut root, &mut cmds.into_iter());
-    get_total_small(&Fs::Dir(root)).to_string()
+    get_total_small(&Fs::Dir(root))
 }
 
 fn get_smallest(fs: &Fs, need: usize) -> Option<usize> {
@@ -124,15 +124,13 @@ fn get_smallest(fs: &Fs, need: usize) -> Option<usize> {
     }
 }
 
-pub fn puzzle2(input: &str) -> String {
+pub fn puzzle2(input: &str) -> usize {
     let cmds = parse(input).unwrap();
     let mut root = HashMap::new();
     explore(&mut root, &mut cmds.into_iter());
     let fs = Fs::Dir(root);
     let total = get_size(&fs);
-    get_smallest(&fs, 30000000 - (70000000 - total))
-        .unwrap()
-        .to_string()
+    get_smallest(&fs, 30000000 - (70000000 - total)).unwrap()
 }
 
 #[cfg(test)]
@@ -144,21 +142,21 @@ mod tests {
 
     #[test]
     fn test_puzzle1_example() {
-        assert_eq!(puzzle1(EXAMPLE), "95437");
+        assert_eq!(puzzle1(EXAMPLE), 95437);
     }
 
     #[test]
     fn test_puzzle1_input() {
-        assert_eq!(puzzle1(INPUT), "1306611");
+        assert_eq!(puzzle1(INPUT), 1306611);
     }
 
     #[test]
     fn test_puzzle2_example() {
-        assert_eq!(puzzle2(EXAMPLE), "24933642");
+        assert_eq!(puzzle2(EXAMPLE), 24933642);
     }
 
     #[test]
     fn test_puzzle2_input() {
-        assert_eq!(puzzle2(INPUT), "13210366");
+        assert_eq!(puzzle2(INPUT), 13210366);
     }
 }

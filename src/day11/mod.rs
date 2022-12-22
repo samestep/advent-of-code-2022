@@ -79,7 +79,7 @@ fn parse(input: &str) -> Vec<Monkey> {
         .collect()
 }
 
-fn solve(mut monkeys: Vec<Monkey>, rounds: usize, f: impl Fn(usize) -> usize) -> String {
+fn solve(mut monkeys: Vec<Monkey>, rounds: usize, f: impl Fn(usize) -> usize) -> isize {
     let mut inspections = vec![0isize; monkeys.len()];
     for _ in 0..rounds {
         for i in 0..monkeys.len() {
@@ -96,14 +96,14 @@ fn solve(mut monkeys: Vec<Monkey>, rounds: usize, f: impl Fn(usize) -> usize) ->
         }
     }
     inspections.sort_by_key(|x| -x);
-    (inspections[0] * inspections[1]).to_string()
+    inspections[0] * inspections[1]
 }
 
-pub fn puzzle1(input: &str) -> String {
+pub fn puzzle1(input: &str) -> isize {
     solve(parse(input), 20, |x| x / 3)
 }
 
-pub fn puzzle2(input: &str) -> String {
+pub fn puzzle2(input: &str) -> isize {
     let monkeys = parse(input);
     let n: usize = monkeys.iter().map(|monkey| monkey.test).product();
     solve(monkeys, 10000, |x| x % n)
@@ -118,21 +118,21 @@ mod tests {
 
     #[test]
     fn test_puzzle1_example() {
-        assert_eq!(puzzle1(EXAMPLE), "10605");
+        assert_eq!(puzzle1(EXAMPLE), 10605);
     }
 
     #[test]
     fn test_puzzle1_input() {
-        assert_eq!(puzzle1(INPUT), "50616");
+        assert_eq!(puzzle1(INPUT), 50616);
     }
 
     #[test]
     fn test_puzzle2_example() {
-        assert_eq!(puzzle2(EXAMPLE), "2713310158");
+        assert_eq!(puzzle2(EXAMPLE), 2713310158);
     }
 
     #[test]
     fn test_puzzle2_input() {
-        assert_eq!(puzzle2(INPUT), "11309046332");
+        assert_eq!(puzzle2(INPUT), 11309046332);
     }
 }

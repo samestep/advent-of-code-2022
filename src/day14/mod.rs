@@ -30,7 +30,7 @@ fn parse(input: &str) -> HashMap<(usize, usize), char> {
     cave
 }
 
-pub fn puzzle1(input: &str) -> String {
+pub fn puzzle1(input: &str) -> usize {
     let mut cave = parse(input);
     let y_max = cave.keys().copied().map(|(_, y)| y).max().unwrap();
     let mut path = HashSet::new();
@@ -57,10 +57,10 @@ pub fn puzzle1(input: &str) -> String {
         }
         path = falling;
     }
-    cave.values().filter(|&&c| c == 'o').count().to_string()
+    cave.values().filter(|&&c| c == 'o').count()
 }
 
-pub fn puzzle2(input: &str) -> String {
+pub fn puzzle2(input: &str) -> usize {
     let mut cave = parse(input);
     let y_max = cave.keys().copied().map(|(_, y)| y).max().unwrap();
     while cave.get(&(X_SAND, Y_SAND)) == Some(&'+') {
@@ -80,7 +80,7 @@ pub fn puzzle2(input: &str) -> String {
             }
         }
     }
-    cave.values().filter(|&&c| c == 'o').count().to_string()
+    cave.values().filter(|&&c| c == 'o').count()
 }
 
 #[cfg(test)]
@@ -92,21 +92,21 @@ mod tests {
 
     #[test]
     fn test_puzzle1_example() {
-        assert_eq!(puzzle1(EXAMPLE), "24");
+        assert_eq!(puzzle1(EXAMPLE), 24);
     }
 
     #[test]
     fn test_puzzle1_input() {
-        assert_eq!(puzzle1(INPUT), "825");
+        assert_eq!(puzzle1(INPUT), 825);
     }
 
     #[test]
     fn test_puzzle2_example() {
-        assert_eq!(puzzle2(EXAMPLE), "93");
+        assert_eq!(puzzle2(EXAMPLE), 93);
     }
 
     #[test]
     fn test_puzzle2_input() {
-        assert_eq!(puzzle2(INPUT), "26729");
+        assert_eq!(puzzle2(INPUT), 26729);
     }
 }

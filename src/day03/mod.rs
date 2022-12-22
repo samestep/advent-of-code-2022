@@ -14,7 +14,7 @@ fn prioritize(c: char) -> Option<i32> {
     }
 }
 
-pub fn puzzle1(input: &str) -> String {
+pub fn puzzle1(input: &str) -> i32 {
     input
         .lines()
         .map(|line| {
@@ -24,11 +24,10 @@ pub fn puzzle1(input: &str) -> String {
                 .map(|c| prioritize(*c).unwrap())
                 .sum::<i32>()
         })
-        .sum::<i32>()
-        .to_string()
+        .sum()
 }
 
-pub fn puzzle2(input: &str) -> String {
+pub fn puzzle2(input: &str) -> i32 {
     let mut sum = 0;
     for mut group in &input.lines().chunks(3) {
         let first = group.next().unwrap();
@@ -41,7 +40,7 @@ pub fn puzzle2(input: &str) -> String {
             .map(|c| prioritize(c).unwrap())
             .sum::<i32>();
     }
-    sum.to_string()
+    sum
 }
 
 #[cfg(test)]
@@ -53,21 +52,21 @@ mod tests {
 
     #[test]
     fn test_puzzle1_example() {
-        assert_eq!(puzzle1(EXAMPLE), "157");
+        assert_eq!(puzzle1(EXAMPLE), 157);
     }
 
     #[test]
     fn test_puzzle1_input() {
-        assert_eq!(puzzle1(INPUT), "7826");
+        assert_eq!(puzzle1(INPUT), 7826);
     }
 
     #[test]
     fn test_puzzle2_example() {
-        assert_eq!(puzzle2(EXAMPLE), "70");
+        assert_eq!(puzzle2(EXAMPLE), 70);
     }
 
     #[test]
     fn test_puzzle2_input() {
-        assert_eq!(puzzle2(INPUT), "2577");
+        assert_eq!(puzzle2(INPUT), 2577);
     }
 }

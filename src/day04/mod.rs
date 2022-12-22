@@ -44,16 +44,16 @@ fn contains(first: Range, second: Range) -> bool {
     first.start <= second.start && second.end <= first.end
 }
 
-pub fn puzzle1(input: &str) -> String {
-    count_pairs(parse(input), contains).to_string()
+pub fn puzzle1(input: &str) -> i32 {
+    count_pairs(parse(input), contains)
 }
 
 fn left_overlap(first: Range, second: Range) -> bool {
     first.start <= second.start && second.start <= first.end
 }
 
-pub fn puzzle2(input: &str) -> String {
-    count_pairs(parse(input), left_overlap).to_string()
+pub fn puzzle2(input: &str) -> i32 {
+    count_pairs(parse(input), left_overlap)
 }
 
 #[cfg(test)]
@@ -65,21 +65,21 @@ mod tests {
 
     #[test]
     fn test_puzzle1_example() {
-        assert_eq!(puzzle1(EXAMPLE), "2");
+        assert_eq!(puzzle1(EXAMPLE), 2);
     }
 
     #[test]
     fn test_puzzle1_input() {
-        assert_eq!(puzzle1(INPUT), "582");
+        assert_eq!(puzzle1(INPUT), 582);
     }
 
     #[test]
     fn test_puzzle2_example() {
-        assert_eq!(puzzle2(EXAMPLE), "4");
+        assert_eq!(puzzle2(EXAMPLE), 4);
     }
 
     #[test]
     fn test_puzzle2_input() {
-        assert_eq!(puzzle2(INPUT), "893");
+        assert_eq!(puzzle2(INPUT), 893);
     }
 }

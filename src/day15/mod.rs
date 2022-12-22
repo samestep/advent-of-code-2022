@@ -14,7 +14,7 @@ fn parse(input: &str) -> impl Iterator<Item = ((isize, isize), (isize, isize))> 
     })
 }
 
-pub fn puzzle1(input: &str, row: isize) -> String {
+pub fn puzzle1(input: &str, row: isize) -> usize {
     let mut beacons = HashSet::new();
     let mut coverage = HashSet::new();
     for (sensor, beacon) in parse(input) {
@@ -31,7 +31,7 @@ pub fn puzzle1(input: &str, row: isize) -> String {
             coverage.remove(&x);
         }
     }
-    coverage.len().to_string()
+    coverage.len()
 }
 
 fn rect_to_diag(x: isize, y: isize) -> (isize, isize) {
@@ -82,7 +82,7 @@ fn subtract(a: Rect, b: Rect) -> Vec<Rect> {
     rects
 }
 
-pub fn puzzle2(input: &str, most: isize) -> String {
+pub fn puzzle2(input: &str, most: isize) -> isize {
     let mut rects = vec![Rect {
         u0: 0,
         u1: most * 2,
@@ -109,7 +109,7 @@ pub fn puzzle2(input: &str, most: isize) -> String {
         .collect();
     assert_eq!(points.len(), 1);
     let (x, y) = points.into_iter().next().unwrap();
-    (x * 4000000 + y).to_string()
+    x * 4000000 + y
 }
 
 #[cfg(test)]
@@ -121,21 +121,21 @@ mod tests {
 
     #[test]
     fn test_puzzle1_example() {
-        assert_eq!(puzzle1(EXAMPLE, 10), "26");
+        assert_eq!(puzzle1(EXAMPLE, 10), 26);
     }
 
     #[test]
     fn test_puzzle1_input() {
-        assert_eq!(puzzle1(INPUT, 2000000), "4424278");
+        assert_eq!(puzzle1(INPUT, 2000000), 4424278);
     }
 
     #[test]
     fn test_puzzle2_example() {
-        assert_eq!(puzzle2(EXAMPLE, 20), "56000011");
+        assert_eq!(puzzle2(EXAMPLE, 20), 56000011);
     }
 
     #[test]
     fn test_puzzle2_input() {
-        assert_eq!(puzzle2(INPUT, 4000000), "10382630753392");
+        assert_eq!(puzzle2(INPUT, 4000000), 10382630753392);
     }
 }

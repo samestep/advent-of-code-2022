@@ -9,7 +9,7 @@ fn parse(input: &str) -> Vec<Vec<i8>> {
         .collect()
 }
 
-pub fn puzzle1(input: &str) -> String {
+pub fn puzzle1(input: &str) -> u32 {
     let grid = parse(input);
     let mut visible = vec![vec![false; grid[0].len()]; grid.len()];
 
@@ -60,11 +60,10 @@ pub fn puzzle1(input: &str) -> String {
     visible
         .into_iter()
         .map(|v| v.into_iter().map(|x| if x { 1 } else { 0 }).sum::<u32>())
-        .sum::<u32>()
-        .to_string()
+        .sum()
 }
 
-pub fn puzzle2(input: &str) -> String {
+pub fn puzzle2(input: &str) -> u32 {
     let grid = parse(input);
     let mut scenic = 0;
     for i in 0..grid.len() {
@@ -104,7 +103,7 @@ pub fn puzzle2(input: &str) -> String {
             scenic = scenic.max(up * down * left * right);
         }
     }
-    scenic.to_string()
+    scenic
 }
 
 #[cfg(test)]
@@ -116,21 +115,21 @@ mod tests {
 
     #[test]
     fn test_puzzle1_example() {
-        assert_eq!(puzzle1(EXAMPLE), "21");
+        assert_eq!(puzzle1(EXAMPLE), 21);
     }
 
     #[test]
     fn test_puzzle1_input() {
-        assert_eq!(puzzle1(INPUT), "1647");
+        assert_eq!(puzzle1(INPUT), 1647);
     }
 
     #[test]
     fn test_puzzle2_example() {
-        assert_eq!(puzzle2(EXAMPLE), "8");
+        assert_eq!(puzzle2(EXAMPLE), 8);
     }
 
     #[test]
     fn test_puzzle2_input() {
-        assert_eq!(puzzle2(INPUT), "392080");
+        assert_eq!(puzzle2(INPUT), 392080);
     }
 }

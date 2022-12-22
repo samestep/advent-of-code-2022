@@ -31,50 +31,50 @@ fn main() {
     let input = fs::read_to_string(args.input).unwrap();
 
     let answer = match (args.day, args.puzzle) {
-        (1, 1) => day01::puzzle1(&input),
-        (1, 2) => day01::puzzle2(&input),
+        (1, 1) => day01::puzzle1(&input).to_string(),
+        (1, 2) => day01::puzzle2(&input).to_string(),
 
-        (2, 1) => day02::puzzle1(&input),
-        (2, 2) => day02::puzzle2(&input),
+        (2, 1) => day02::puzzle1(&input).to_string(),
+        (2, 2) => day02::puzzle2(&input).to_string(),
 
-        (3, 1) => day03::puzzle1(&input),
-        (3, 2) => day03::puzzle2(&input),
+        (3, 1) => day03::puzzle1(&input).to_string(),
+        (3, 2) => day03::puzzle2(&input).to_string(),
 
-        (4, 1) => day04::puzzle1(&input),
-        (4, 2) => day04::puzzle2(&input),
+        (4, 1) => day04::puzzle1(&input).to_string(),
+        (4, 2) => day04::puzzle2(&input).to_string(),
 
         (5, 1) => day05::puzzle1(&input),
         (5, 2) => day05::puzzle2(&input),
 
-        (6, 1) => day06::puzzle1(&input),
-        (6, 2) => day06::puzzle2(&input),
+        (6, 1) => day06::puzzle1(&input).to_string(),
+        (6, 2) => day06::puzzle2(&input).to_string(),
 
-        (7, 1) => day07::puzzle1(&input),
-        (7, 2) => day07::puzzle2(&input),
+        (7, 1) => day07::puzzle1(&input).to_string(),
+        (7, 2) => day07::puzzle2(&input).to_string(),
 
-        (8, 1) => day08::puzzle1(&input),
-        (8, 2) => day08::puzzle2(&input),
+        (8, 1) => day08::puzzle1(&input).to_string(),
+        (8, 2) => day08::puzzle2(&input).to_string(),
 
-        (9, 1) => day09::puzzle1(&input),
-        (9, 2) => day09::puzzle2(&input),
+        (9, 1) => day09::puzzle1(&input).to_string(),
+        (9, 2) => day09::puzzle2(&input).to_string(),
 
-        (10, 1) => day10::puzzle1(&input),
+        (10, 1) => day10::puzzle1(&input).to_string(),
         (10, 2) => day10::puzzle2(&input),
 
-        (11, 1) => day11::puzzle1(&input),
-        (11, 2) => day11::puzzle2(&input),
+        (11, 1) => day11::puzzle1(&input).to_string(),
+        (11, 2) => day11::puzzle2(&input).to_string(),
 
-        (12, 1) => day12::puzzle1(&input),
-        (12, 2) => day12::puzzle2(&input),
+        (12, 1) => day12::puzzle1(&input).to_string(),
+        (12, 2) => day12::puzzle2(&input).to_string(),
 
-        (13, 1) => day13::puzzle1(&input),
-        (13, 2) => day13::puzzle2(&input),
+        (13, 1) => day13::puzzle1(&input).to_string(),
+        (13, 2) => day13::puzzle2(&input).to_string(),
 
-        (14, 1) => day14::puzzle1(&input),
-        (14, 2) => day14::puzzle2(&input),
+        (14, 1) => day14::puzzle1(&input).to_string(),
+        (14, 2) => day14::puzzle2(&input).to_string(),
 
-        (15, 1) => day15::puzzle1(&input, args.extra[0].parse().unwrap()),
-        (15, 2) => day15::puzzle2(&input, args.extra[0].parse().unwrap()),
+        (15, 1) => day15::puzzle1(&input, args.extra[0].parse().unwrap()).to_string(),
+        (15, 2) => day15::puzzle2(&input, args.extra[0].parse().unwrap()).to_string(),
 
         _ => panic!("no puzzle {} for day {}", args.puzzle, args.day),
     };

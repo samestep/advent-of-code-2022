@@ -55,14 +55,14 @@ impl State for State1 {
     }
 }
 
-pub fn puzzle1(input: &str) -> String {
+pub fn puzzle1(input: &str) -> i32 {
     let mut state = State1 {
         cycle: 1,
         x: 1,
         sum: 0,
     };
     run(parse(input), &mut state);
-    state.sum.to_string()
+    state.sum
 }
 
 const W: usize = 40;
@@ -119,12 +119,12 @@ mod tests {
 
     #[test]
     fn test_puzzle1_example() {
-        assert_eq!(puzzle1(EXAMPLE), "13140");
+        assert_eq!(puzzle1(EXAMPLE), 13140);
     }
 
     #[test]
     fn test_puzzle1_input() {
-        assert_eq!(puzzle1(INPUT), "15220");
+        assert_eq!(puzzle1(INPUT), 15220);
     }
 
     #[test]

@@ -58,7 +58,7 @@ fn follow(h: Pos, t: &mut Pos) {
     }
 }
 
-fn solve<const L: usize>(input: &str) -> String {
+fn solve<const L: usize>(input: &str) -> usize {
     let mut positions = HashSet::new();
     let mut rope = [Pos { x: 0, y: 0 }; L];
     for (d, n) in parse(input) {
@@ -70,14 +70,14 @@ fn solve<const L: usize>(input: &str) -> String {
             positions.insert(rope[L - 1]);
         }
     }
-    positions.len().to_string()
+    positions.len()
 }
 
-pub fn puzzle1(input: &str) -> String {
+pub fn puzzle1(input: &str) -> usize {
     solve::<2>(input)
 }
 
-pub fn puzzle2(input: &str) -> String {
+pub fn puzzle2(input: &str) -> usize {
     solve::<10>(input)
 }
 
@@ -91,21 +91,21 @@ mod tests {
 
     #[test]
     fn test_puzzle1_example1() {
-        assert_eq!(puzzle1(EXAMPLE1), "13");
+        assert_eq!(puzzle1(EXAMPLE1), 13);
     }
 
     #[test]
     fn test_puzzle1_input() {
-        assert_eq!(puzzle1(INPUT), "6339");
+        assert_eq!(puzzle1(INPUT), 6339);
     }
 
     #[test]
     fn test_puzzle2_example2() {
-        assert_eq!(puzzle2(EXAMPLE2), "36");
+        assert_eq!(puzzle2(EXAMPLE2), 36);
     }
 
     #[test]
     fn test_puzzle2_input() {
-        assert_eq!(puzzle2(INPUT), "2541");
+        assert_eq!(puzzle2(INPUT), 2541);
     }
 }

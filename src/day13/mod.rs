@@ -75,7 +75,7 @@ fn compare(left: &Packet, right: &Packet) -> Option<bool> {
     }
 }
 
-pub fn puzzle1(input: &str) -> String {
+pub fn puzzle1(input: &str) -> usize {
     parse(input)
         .enumerate()
         .filter_map(|(i, (left, right))| {
@@ -85,11 +85,10 @@ pub fn puzzle1(input: &str) -> String {
                 None
             }
         })
-        .sum::<usize>()
-        .to_string()
+        .sum()
 }
 
-pub fn puzzle2(input: &str) -> String {
+pub fn puzzle2(input: &str) -> usize {
     let mut packets = parse(input)
         .flat_map(|(left, right)| [left, right])
         .collect::<Vec<_>>();
@@ -102,9 +101,8 @@ pub fn puzzle2(input: &str) -> String {
         None => Ordering::Equal,
         Some(false) => Ordering::Greater,
     });
-    ((packets.iter().position(|x| *x == fst).unwrap() + 1)
-        * (packets.iter().position(|x| *x == snd).unwrap() + 1))
-        .to_string()
+    (packets.iter().position(|x| *x == fst).unwrap() + 1)
+        * (packets.iter().position(|x| *x == snd).unwrap() + 1)
 }
 
 #[cfg(test)]
@@ -116,21 +114,21 @@ mod tests {
 
     #[test]
     fn test_puzzle1_example() {
-        assert_eq!(puzzle1(EXAMPLE), "13");
+        assert_eq!(puzzle1(EXAMPLE), 13);
     }
 
     #[test]
     fn test_puzzle1_input() {
-        assert_eq!(puzzle1(INPUT), "5806");
+        assert_eq!(puzzle1(INPUT), 5806);
     }
 
     #[test]
     fn test_puzzle2_example() {
-        assert_eq!(puzzle2(EXAMPLE), "140");
+        assert_eq!(puzzle2(EXAMPLE), 140);
     }
 
     #[test]
     fn test_puzzle2_input() {
-        assert_eq!(puzzle2(INPUT), "23600");
+        assert_eq!(puzzle2(INPUT), 23600);
     }
 }

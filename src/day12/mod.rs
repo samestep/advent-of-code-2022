@@ -43,7 +43,7 @@ fn solve(
     grid: Vec<Vec<u8>>,
     mut queue: BinaryHeap<(isize, (usize, usize))>,
     end: (usize, usize),
-) -> String {
+) -> isize {
     let h = grid.len();
     let w = grid[0].len();
     let mut visited = vec![vec![None; w]; h];
@@ -66,17 +66,17 @@ fn solve(
         }
     }
     let (y, x) = end;
-    (-visited[y][x].unwrap()).to_string()
+    -visited[y][x].unwrap()
 }
 
-pub fn puzzle1(input: &str) -> String {
+pub fn puzzle1(input: &str) -> isize {
     let Heightmap { grid, start, end } = parse(input);
     let mut queue = BinaryHeap::new();
     queue.push((0, start));
     solve(grid, queue, end)
 }
 
-pub fn puzzle2(input: &str) -> String {
+pub fn puzzle2(input: &str) -> isize {
     let Heightmap { grid, end, .. } = parse(input);
     let mut queue = BinaryHeap::new();
     for y in 0..grid.len() {
@@ -98,21 +98,21 @@ mod tests {
 
     #[test]
     fn test_puzzle1_example() {
-        assert_eq!(puzzle1(EXAMPLE), "31");
+        assert_eq!(puzzle1(EXAMPLE), 31);
     }
 
     #[test]
     fn test_puzzle1_input() {
-        assert_eq!(puzzle1(INPUT), "370");
+        assert_eq!(puzzle1(INPUT), 370);
     }
 
     #[test]
     fn test_puzzle2_example() {
-        assert_eq!(puzzle2(EXAMPLE), "29");
+        assert_eq!(puzzle2(EXAMPLE), 29);
     }
 
     #[test]
     fn test_puzzle2_input() {
-        assert_eq!(puzzle2(INPUT), "363");
+        assert_eq!(puzzle2(INPUT), 363);
     }
 }
