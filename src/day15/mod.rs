@@ -48,7 +48,7 @@ fn diag_to_rect(u: isize, v: isize) -> Option<(isize, isize)> {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, PartialEq)]
 struct Rect {
     u0: isize,
     u1: isize,

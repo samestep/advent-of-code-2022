@@ -5,7 +5,6 @@ use regex::Regex;
 
 type Name = (char, char);
 
-#[derive(Debug)]
 struct Valve {
     rate: isize,
     tunnels: HashMap<Name, isize>,
