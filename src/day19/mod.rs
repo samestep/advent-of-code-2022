@@ -135,11 +135,13 @@ mod tests {
         assert_eq!(puzzle1(INPUT), 1389);
     }
 
+    #[ignore]
     #[test]
     fn test_puzzle2_example() {
         assert_eq!(puzzle2(EXAMPLE), 56 * 62);
     }
 
+    #[ignore]
     #[test]
     fn test_puzzle2_input() {
         assert_eq!(puzzle2(INPUT), 3003);
