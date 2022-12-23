@@ -78,6 +78,7 @@ fn main() {
         (15, 2) => day15::puzzle2(&input, args.extra[0].parse().unwrap()).to_string(),
 
         (16, 1) => day16::puzzle1(&input).to_string(),
+        (16, 2) => day16::puzzle2(&input).to_string(),
 
         _ => panic!("no puzzle {} for day {}", args.puzzle, args.day),
     };
