@@ -36,12 +36,15 @@ fn div_ceil(x: usize, y: usize) -> usize {
     (x + y - 1) / y
 }
 
-fn best(m: &Matrix, s: State) -> usize {
+fn best(m: &Matrix, s: State, a: usize, b: bool) -> usize {
     let mut geodes = s.resources[N - 1] + s.minutes * s.robots[N - 1];
     if s.minutes == 0 {
         return geodes;
     }
-    'outer: for i in 0..N {
+    'outer: for i in a.saturating_sub(1)..N.min(a + 2) {
+        if i < a && b {
+            continue;
+        }
         let mut wait = 0;
         for j in 0..N {
             let c = m[i][j];
@@ -68,6 +71,8 @@ fn best(m: &Matrix, s: State) -> usize {
                     robots,
                     resources,
                 },
+                i,
+                i < a || (i == a && b),
             ));
         }
     }
@@ -87,9 +92,30 @@ pub fn puzzle1(input: &str) -> usize {
                         robots: [1, 0, 0, 0],
                         resources: [0; N],
                     },
+                    0,
+                    false,
                 )
         })
         .sum()
+}
+
+pub fn puzzle2(input: &str) -> usize {
+    parse(input)
+        .into_iter()
+        .take(3)
+        .map(|blueprint| {
+            best(
+                &blueprint,
+                State {
+                    minutes: 32,
+                    robots: [1, 0, 0, 0],
+                    resources: [0; N],
+                },
+                0,
+                false,
+            )
+        })
+        .product()
 }
 
 #[cfg(test)]
@@ -107,5 +133,15 @@ mod tests {
     #[test]
     fn test_puzzle1_input() {
         assert_eq!(puzzle1(INPUT), 1389);
+    }
+
+    #[test]
+    fn test_puzzle2_example() {
+        assert_eq!(puzzle2(EXAMPLE), 56 * 62);
+    }
+
+    #[test]
+    fn test_puzzle2_input() {
+        assert_eq!(puzzle2(INPUT), 3003);
     }
 }
