@@ -1,93 +1,90 @@
-use std::collections::{BinaryHeap, HashMap, HashSet};
+use std::collections::{BinaryHeap, HashMap};
 
 use itertools::Itertools;
 use regex::Regex;
 
 type Name = (char, char);
 
-struct Valve {
-    rate: isize,
-    tunnels: HashMap<Name, isize>,
-}
-
 const START: Name = ('A', 'A');
 
-fn parse(input: &str) -> HashMap<Name, Valve> {
+fn parse(input: &str) -> Vec<(isize, Vec<isize>)> {
     let re =
         Regex::new(r"^Valve (.+) has flow rate=(.+); tunnels? leads? to valves? (.+)$").unwrap();
-    let mut graph: HashMap<Name, Valve> = input
+    let mut graph: HashMap<Name, (isize, HashMap<Name, isize>)> = input
         .lines()
         .map(|line| {
             let caps = re.captures(line).unwrap();
             (
                 caps[1].chars().collect_tuple().unwrap(),
-                Valve {
-                    rate: caps[2].parse().unwrap(),
-                    tunnels: caps[3]
+                (
+                    caps[2].parse().unwrap(),
+                    caps[3]
                         .split(", ")
                         .map(|name| (name.chars().collect_tuple().unwrap(), 1))
                         .collect(),
-                },
+                ),
             )
         })
         .collect();
-    assert_eq!(graph.get(&START).unwrap().rate, 0);
+    assert_eq!(graph.get(&START).unwrap().0, 0);
     for x in graph.keys().copied().collect::<Vec<_>>() {
         if let Some(((a, m), (b, n))) = {
-            let Valve { rate, tunnels, .. } = graph.get(&x).unwrap();
+            let (rate, tunnels) = graph.get(&x).unwrap();
             if x != START && *rate == 0 && tunnels.len() == 2 {
                 tunnels.iter().map(|(&k, &v)| (k, v)).collect_tuple()
             } else {
                 None
             }
         } {
-            let l = &mut graph.get_mut(&a).unwrap().tunnels;
+            let (_, l) = &mut graph.get_mut(&a).unwrap();
             l.remove(&x);
             l.insert(b, m + n);
-            let r = &mut graph.get_mut(&b).unwrap().tunnels;
+            let (_, r) = &mut graph.get_mut(&b).unwrap();
             r.remove(&x);
             r.insert(a, m + n);
             graph.remove(&x);
         }
     }
-    for x in graph.keys().copied().collect::<Vec<_>>() {
-        let mut visited = HashSet::new();
-        let mut queue = BinaryHeap::new();
-        queue.push((0, x));
-        while let Some((d, k)) = queue.pop() {
-            if visited.contains(&k) {
-                continue;
+    let mut keys: Vec<Name> = graph.keys().copied().collect();
+    keys.sort();
+    let keymap: HashMap<Name, usize> = keys.iter().enumerate().map(|(i, &x)| (x, i)).collect();
+    keys.into_iter()
+        .map(|x| {
+            let mut times = vec![isize::MAX; keymap.len()];
+            let mut queue = BinaryHeap::new();
+            queue.push((0, x));
+            while let Some((d, k)) = queue.pop() {
+                let r = &mut times[keymap[&k]];
+                if d <= -*r {
+                    continue;
+                }
+                *r = -d;
+                for (&y, &n) in &graph[&k].1 {
+                    queue.push((d - n, y));
+                }
             }
-            visited.insert(k);
-            graph.get_mut(&x).unwrap().tunnels.entry(k).or_insert(-d);
-            let Valve { tunnels, .. } = graph.get_mut(&k).unwrap();
-            tunnels.entry(x).or_insert(-d);
-            for (&y, &mut n) in tunnels {
-                queue.push((d - n, y));
-            }
-        }
-    }
-    graph
+            (graph[&x].0, times)
+        })
+        .collect()
 }
 
-fn search1(
-    graph: &HashMap<Name, Valve>,
+fn search(
+    graph: &[(isize, Vec<isize>)],
+    mask: usize,
     minute: isize,
-    now: Name,
-    open: &mut HashSet<Name>,
+    now: usize,
     current: isize,
 ) -> isize {
-    let valve = graph.get(&now).unwrap();
-    let flow: isize = current + valve.rate;
+    let (rate, tunnels) = &graph[now];
+    let flow: isize = current + rate;
     let mut pressure = flow * minute;
-    for (&k, &v) in &valve.tunnels {
-        if !open.contains(&k) {
+    for (i, v) in tunnels.iter().enumerate() {
+        let bit = 1 << i;
+        if bit & mask == 0 {
             let d = v + 1;
             let later = minute - d;
             if later > 0 {
-                open.insert(k);
-                pressure = pressure.max(flow * d + search1(graph, later, k, open, flow));
-                open.remove(&k);
+                pressure = pressure.max(flow * d + search(graph, mask | bit, later, i, flow));
             }
         }
     }
@@ -95,91 +92,20 @@ fn search1(
 }
 
 pub fn puzzle1(input: &str) -> isize {
-    search1(&parse(input), 30, START, &mut HashSet::new(), 0)
-}
-
-fn search2(
-    graph: &HashMap<Name, Valve>,
-    minute: isize,
-    me: (isize, Name),
-    elephant: (isize, Name),
-    open: &mut HashSet<Name>,
-) -> isize {
-    if minute == 0 {
-        return 0;
-    }
-    if me.0 == 0 {
-        let mut pressure = None;
-        for (&k, &v) in &graph.get(&me.1).unwrap().tunnels {
-            let d = v + 1;
-            if !open.contains(&k) && d < minute {
-                open.insert(k);
-                pressure =
-                    Some(
-                        pressure
-                            .unwrap_or(0)
-                            .max(search2(graph, minute, (d, k), elephant, open)),
-                    );
-                open.remove(&k);
-            }
-        }
-        if let Some(n) = pressure {
-            return n;
-        }
-    }
-    if elephant.0 == 0 {
-        let mut pressure = None;
-        for (&k, &v) in &graph.get(&elephant.1).unwrap().tunnels {
-            let d = v + 1;
-            if !open.contains(&k) && d < minute {
-                open.insert(k);
-                pressure =
-                    Some(
-                        pressure
-                            .unwrap_or(0)
-                            .max(search2(graph, minute, me, (d, k), open)),
-                    );
-                open.remove(&k);
-            }
-        }
-        if let Some(n) = pressure {
-            return n;
-        }
-    }
-    let current: isize = open
-        .iter()
-        .filter_map(|&x| {
-            if (x != me.1 && x != elephant.1)
-                || (x == me.1 && me.0 == 0)
-                || (x == elephant.1 && elephant.0 == 0)
-            {
-                Some(graph.get(&x).unwrap().rate)
-            } else {
-                None
-            }
-        })
-        .sum();
-    let mut t = minute;
-    if me.0 > 0 {
-        t = t.min(me.0);
-    }
-    if elephant.0 > 0 {
-        t = t.min(elephant.0);
-    }
-    current * t
-        + search2(
-            graph,
-            minute - t,
-            ((me.0 - t).max(0), me.1),
-            ((elephant.0 - t).max(0), elephant.1),
-            open,
-        )
+    search(&parse(input), 1, 30, 0, 0)
 }
 
 pub fn puzzle2(input: &str) -> isize {
-    let mut open = HashSet::new();
-    open.insert(START);
-    search2(&parse(input), 26, (0, START), (0, START), &mut open)
+    let graph = parse(input);
+    let best: Vec<_> = (0..1 << (graph.len() - 1))
+        .map(|mask| search(&graph, (mask << 1) | 1, 26, 0, 0))
+        .collect();
+    let all = best.len() - 1;
+    best.iter()
+        .enumerate()
+        .map(|(mask, total)| total + best[mask ^ all])
+        .max()
+        .unwrap()
 }
 
 #[cfg(test)]
@@ -204,7 +130,6 @@ mod tests {
         assert_eq!(puzzle2(EXAMPLE), 1707);
     }
 
-    #[ignore]
     #[test]
     fn test_puzzle2_input() {
         assert_eq!(puzzle2(INPUT), 2967);
