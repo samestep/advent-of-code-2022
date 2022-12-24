@@ -61,6 +61,7 @@ fn parse(input: &str) -> (Vec<Vec<Option<bool>>>, Vec<Movement>) {
     )
 }
 
+#[derive(Clone, Copy)]
 enum Facing {
     R,
     D,
@@ -94,11 +95,12 @@ fn walk(
                         L => (y, x - 1),
                         U => (y - 1, x),
                     };
+                    let mut f = facing;
                     if get(grid, j, i).is_none() {
-                        (j, i, facing) = wrap(x, y, facing);
+                        (j, i, f) = wrap(x, y, facing);
                     }
                     if let Some(false) = get(grid, j, i) {
-                        (x, y) = (j, i);
+                        (x, y, facing) = (j, i, f);
                     }
                 }
             }
@@ -157,6 +159,38 @@ pub fn puzzle1(input: &str) -> isize {
     })
 }
 
+const S: isize = 50;
+
+pub fn puzzle2(input: &str) -> isize {
+    let (grid, movements) = parse(input);
+    walk(&grid, S, 0, &movements, |x, y, facing| {
+        match (x / S, y / S, facing) {
+            (2, 0, R) => (2 * S - 1, 3 * S - 1 - y % S, L),
+            (1, 2, R) => (3 * S - 1, S - 1 - y % S, L),
+
+            (2, 0, D) => (2 * S - 1, S + x % S, L),
+            (1, 1, R) => (2 * S + y % S, S - 1, U),
+
+            (1, 2, D) => (S - 1, 3 * S + x % S, L),
+            (0, 3, R) => (S + y % S, 3 * S - 1, U),
+
+            (0, 3, D) => (2 * S + x % S, 0, D),
+            (2, 0, U) => (x % S, 4 * S - 1, U),
+
+            (0, 3, L) => (S + y % S, 0, D),
+            (1, 0, U) => (0, 3 * S + x % S, R),
+
+            (0, 2, L) => (S, S - 1 - y % S, R),
+            (1, 0, L) => (0, 3 * S - 1 - y % S, R),
+
+            (0, 2, U) => (S, S + x % S, R),
+            (1, 1, L) => (y % S, 2 * S, D),
+
+            _ => unimplemented!(),
+        }
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -172,5 +206,10 @@ mod tests {
     #[test]
     fn test_puzzle1_input() {
         assert_eq!(puzzle1(INPUT), 20494);
+    }
+
+    #[test]
+    fn test_puzzle2_input() {
+        assert_eq!(puzzle2(INPUT), 55343);
     }
 }
