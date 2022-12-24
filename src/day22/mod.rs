@@ -96,7 +96,7 @@ fn walk(
                     };
                     if get(grid, j, i).is_none() {
                         (j, i, facing) = wrap(x, y, facing);
-                        }
+                    }
                     if let Some(false) = get(grid, j, i) {
                         (x, y) = (j, i);
                     }
