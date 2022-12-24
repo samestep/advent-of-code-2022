@@ -174,6 +174,6 @@ mod tests {
 
     #[test]
     fn test_puzzle2_input() {
-        assert_eq!(puzzle2(INPUT), 0);
+        assert_eq!(puzzle2(INPUT), 3555057453229);
     }
 }
