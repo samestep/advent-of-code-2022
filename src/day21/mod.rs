@@ -119,9 +119,7 @@ pub fn puzzle2(input: &str) -> isize {
     yell(
         parse(input)
             .map(|(name, job)| {
-                if name == HUMAN {
-                    (ROOT, Lone(0))
-                } else if path.contains(name) {
+                if path.contains(name) {
                     match job {
                         Wait(left, op, right) => {
                             let (n, l, o, r) = match (path.contains(left), op, path.contains(right))
@@ -139,7 +137,7 @@ pub fn puzzle2(input: &str) -> isize {
                             };
                             (n, Wait(l, if name == ROOT { Add } else { o }, r))
                         }
-                        _ => unreachable!(),
+                        _ => (ROOT, Lone(0)),
                     }
                 } else {
                     (name, job)
