@@ -132,7 +132,7 @@ pub fn puzzle1(input: &str) -> isize {
         .iter()
         .map(|row| {
             let it = row.iter().enumerate().filter_map(|(j, t)| t.map(|_| j));
-            (it.clone().min(), it.max())
+            (it.clone().min().unwrap(), it.max().unwrap())
         })
         .collect();
     let cols: Vec<_> = (0..grid[0].len())
@@ -141,17 +141,17 @@ pub fn puzzle1(input: &str) -> isize {
                 .iter()
                 .enumerate()
                 .filter_map(|(i, row)| row[j].map(|_| i));
-            (it.clone().min(), it.max())
+            (it.clone().min().unwrap(), it.max().unwrap())
         })
         .collect();
     let y = 0;
-    let x = rows[y as usize].0.unwrap() as isize;
+    let x = rows[y as usize].0 as isize;
     walk(&grid, x, y, &movements, |mut j, mut i, facing| {
         match facing {
-            R => j = rows[i as usize].0.unwrap() as isize,
-            D => i = cols[j as usize].0.unwrap() as isize,
-            L => j = rows[i as usize].1.unwrap() as isize,
-            U => i = cols[j as usize].1.unwrap() as isize,
+            R => j = rows[i as usize].0 as isize,
+            D => i = cols[j as usize].0 as isize,
+            L => j = rows[i as usize].1 as isize,
+            U => i = cols[j as usize].1 as isize,
         }
         (j, i, facing)
     })
