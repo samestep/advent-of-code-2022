@@ -70,23 +70,23 @@ fn parse(input: &str) -> HashMap<Name, Valve> {
     graph
 }
 
-const LIMIT1: isize = 30;
-
 fn search1(
     graph: &HashMap<Name, Valve>,
     minute: isize,
     now: Name,
     open: &mut HashSet<Name>,
+    current: isize,
 ) -> isize {
-    let current: isize = open.iter().map(|x| graph.get(x).unwrap().rate).sum();
-    let mut pressure = current * (LIMIT1 - minute);
-    for (&k, &v) in &graph.get(&now).unwrap().tunnels {
+    let valve = graph.get(&now).unwrap();
+    let flow: isize = current + valve.rate;
+    let mut pressure = flow * minute;
+    for (&k, &v) in &valve.tunnels {
         if !open.contains(&k) {
             let d = v + 1;
-            let later = minute + d;
-            if later < LIMIT1 {
+            let later = minute - d;
+            if later > 0 {
                 open.insert(k);
-                pressure = pressure.max(current * d + search1(graph, later, k, open));
+                pressure = pressure.max(flow * d + search1(graph, later, k, open, flow));
                 open.remove(&k);
             }
         }
@@ -95,7 +95,7 @@ fn search1(
 }
 
 pub fn puzzle1(input: &str) -> isize {
-    search1(&parse(input), 0, START, &mut HashSet::new())
+    search1(&parse(input), 30, START, &mut HashSet::new(), 0)
 }
 
 fn search2(
