@@ -1,3 +1,5 @@
+use std::collections::{HashMap, HashSet};
+
 use regex::Regex;
 
 enum Wise {
@@ -41,15 +43,44 @@ fn parse(input: &str) -> (Vec<Vec<Option<bool>>>, Vec<Movement>) {
     )
 }
 
-#[derive(Clone, Copy)]
-enum Facing {
+#[derive(Clone, Copy, Eq, Hash, PartialEq)]
+enum Dir {
     R,
     D,
     L,
     U,
 }
 
-use Facing::*;
+use Dir::*;
+
+impl Dir {
+    fn right(self) -> Self {
+        match self {
+            R => D,
+            D => L,
+            L => U,
+            U => R,
+        }
+    }
+
+    fn flip(self) -> Self {
+        match self {
+            R => L,
+            D => U,
+            L => R,
+            U => D,
+        }
+    }
+
+    fn left(self) -> Self {
+        match self {
+            R => U,
+            D => R,
+            L => D,
+            U => L,
+        }
+    }
+}
 
 fn get(grid: &[Vec<Option<bool>>], x: isize, y: isize) -> Option<bool> {
     let i: usize = y.try_into().ok()?;
@@ -62,49 +93,39 @@ fn walk(
     mut x: isize,
     mut y: isize,
     movements: &[Movement],
-    wrap: impl Fn(isize, isize, Facing) -> (isize, isize, Facing),
+    wrap: impl Fn(isize, isize, Dir) -> (isize, isize, Dir),
 ) -> isize {
-    let mut facing = R;
+    let mut dir = R;
     for movement in movements {
         match movement {
             &Go(n) => {
                 for _ in 0..n {
-                    let (mut i, mut j) = match facing {
+                    let (mut i, mut j) = match dir {
                         R => (y, x + 1),
                         D => (y + 1, x),
                         L => (y, x - 1),
                         U => (y - 1, x),
                     };
-                    let mut f = facing;
+                    let mut d = dir;
                     if get(grid, j, i).is_none() {
-                        (j, i, f) = wrap(x, y, facing);
+                        (j, i, d) = wrap(x, y, dir);
                     }
                     if let Some(false) = get(grid, j, i) {
-                        (x, y, facing) = (j, i, f);
+                        (x, y, dir) = (j, i, d);
                     }
                 }
             }
             Turn(wise) => {
-                facing = match wise {
-                    Wise::L => match facing {
-                        R => U,
-                        D => R,
-                        L => D,
-                        U => L,
-                    },
-                    Wise::R => match facing {
-                        R => D,
-                        D => L,
-                        L => U,
-                        U => R,
-                    },
+                dir = match wise {
+                    Wise::L => dir.left(),
+                    Wise::R => dir.right(),
                 }
             }
         }
     }
     1000 * (y + 1)
         + 4 * (x + 1)
-        + match facing {
+        + match dir {
             R => 0,
             D => 1,
             L => 2,
@@ -132,47 +153,121 @@ pub fn puzzle1(input: &str) -> isize {
         .collect();
     let y = 0;
     let x = rows[y as usize].0 as isize;
-    walk(&grid, x, y, &movements, |mut j, mut i, facing| {
-        match facing {
+    walk(&grid, x, y, &movements, |mut j, mut i, dir| {
+        match dir {
             R => j = rows[i as usize].0 as isize,
             D => i = cols[j as usize].0 as isize,
             L => j = rows[i as usize].1 as isize,
             U => i = cols[j as usize].1 as isize,
         }
-        (j, i, facing)
+        (j, i, dir)
     })
 }
 
-const S: isize = 50;
+type Edge = ((isize, isize), Dir);
+type Face = HashMap<Dir, Edge>;
+type Cube = HashMap<(isize, isize), Face>;
+
+fn join(f1: &mut Face, e1: Edge, f2: &mut Face, e2: Edge) {
+    f1.insert(e1.1, e2);
+    f2.insert(e2.1, e1);
+}
+
+fn fold(map: HashSet<(isize, isize)>) -> Cube {
+    let mut faces: Cube = HashMap::new();
+    let mut stack = vec![*map.iter().next().unwrap()];
+    while let Some(k0) = stack.pop() {
+        let (x0, y0) = k0;
+        let mut f0 = HashMap::new();
+        for (d0, k1) in [
+            (R, (x0 + 1, y0)),
+            (D, (x0, y0 + 1)),
+            (L, (x0 - 1, y0)),
+            (U, (x0, y0 - 1)),
+        ] {
+            if !map.contains(&k1) {
+                continue;
+            }
+            if let Some(f1) = faces.get_mut(&k1) {
+                join(&mut f0, (k0, d0), f1, (k1, d0.flip()));
+                let (l, r) = (f1.get(&d0.left()).copied(), f1.get(&d0.right()).copied());
+                let mut follow = |e, r0: fn(Dir) -> Dir, r: fn(Dir) -> Dir| {
+                    if let Some((k2, d2)) = e {
+                        let f2 = faces.get_mut(&k2).unwrap();
+                        join(&mut f0, (k0, r0(d0)), f2, (k2, r(d2)));
+                        if let Some(&(k3, d3)) = f2.get(&d2.flip()) {
+                            let f3 = faces.get_mut(&k3).unwrap();
+                            join(&mut f0, (k0, d0.flip()), f3, (k3, r(d3)));
+                        }
+                    }
+                };
+                follow(l, |d| d.left(), |d| d.right());
+                follow(r, |d| d.right(), |d| d.left());
+            } else {
+                stack.push(k1);
+            }
+        }
+        faces.insert(k0, f0);
+    }
+    faces
+}
+
+fn isqrt(n: usize) -> usize {
+    if n < 2 {
+        return n;
+    }
+    let mut x = 1 << ((1 + usize::BITS - n.leading_zeros()) / 2);
+    loop {
+        let y = (x + n / x) / 2;
+        if x <= y {
+            return x;
+        }
+        x = y;
+    }
+}
 
 pub fn puzzle2(input: &str) -> isize {
     let (grid, movements) = parse(input);
-    walk(&grid, S, 0, &movements, |x, y, facing| {
-        match (x / S, y / S, facing) {
-            (2, 0, R) => (2 * S - 1, 3 * S - 1 - y % S, L),
-            (1, 2, R) => (3 * S - 1, S - 1 - y % S, L),
-
-            (2, 0, D) => (2 * S - 1, S + x % S, L),
-            (1, 1, R) => (2 * S + y % S, S - 1, U),
-
-            (1, 2, D) => (S - 1, 3 * S + x % S, L),
-            (0, 3, R) => (S + y % S, 3 * S - 1, U),
-
-            (0, 3, D) => (2 * S + x % S, 0, D),
-            (2, 0, U) => (x % S, 4 * S - 1, U),
-
-            (0, 3, L) => (S + y % S, 0, D),
-            (1, 0, U) => (0, 3 * S + x % S, R),
-
-            (0, 2, L) => (S, S - 1 - y % S, R),
-            (1, 0, L) => (0, 3 * S - 1 - y % S, R),
-
-            (0, 2, U) => (S, S + x % S, R),
-            (1, 1, L) => (y % S, 2 * S, D),
-
-            _ => unimplemented!(),
-        }
-    })
+    let n = grid
+        .iter()
+        .flat_map(|row| row.iter().filter(|tile| tile.is_some()))
+        .count();
+    let s = isqrt(n / 6);
+    let (h, w) = (grid.len(), grid[0].len());
+    assert_eq!(6 * s * s, n);
+    assert_eq!(h % s, 0);
+    assert_eq!(w % s, 0);
+    let cube = fold(
+        (0..h / s)
+            .flat_map(|i| {
+                let map = &grid; // https://stackoverflow.com/a/67230904/5044950
+                (0..w / s).filter_map(move |j| map[i * s][j * s].map(|_| (j as isize, i as isize)))
+            })
+            .collect(),
+    );
+    walk(
+        &grid,
+        grid[0].iter().position(|tile| tile.is_some()).unwrap() as isize,
+        0,
+        &movements,
+        |x0, y0, mut d0| {
+            let l = s as isize;
+            let k0 = (x0 / l, y0 / l);
+            let ((j, i), d1) = cube[&k0][&d0];
+            let (mut x, mut y) = (x0 % l, y0 % l);
+            while d0 != d1.flip() {
+                (x, y) = (l - 1 - y, x);
+                d0 = d0.right();
+            }
+            let (x1, y1) = match d1 {
+                R => (l - 1, y),
+                D => (x, l - 1),
+                L => (0, y),
+                U => (x, 0),
+            };
+            (j * l + x1, i * l + y1, d1.flip())
+        },
+    )
 }
 
 #[cfg(test)]
@@ -190,6 +285,11 @@ mod tests {
     #[test]
     fn test_puzzle1_input() {
         assert_eq!(puzzle1(INPUT), 20494);
+    }
+
+    #[test]
+    fn test_puzzle2_example() {
+        assert_eq!(puzzle2(EXAMPLE), 5031);
     }
 
     #[test]
