@@ -36,15 +36,13 @@ fn div_ceil(x: usize, y: usize) -> usize {
     (x + y - 1) / y
 }
 
-fn best(m: &Matrix, s: State, a: usize, b: bool) -> usize {
-    let mut geodes = s.resources[N - 1] + s.minutes * s.robots[N - 1];
-    if s.minutes == 0 {
-        return geodes;
+fn search(m: &Matrix, geodes: &mut usize, s: State) {
+    let baseline = s.resources[N - 1] + s.minutes * s.robots[N - 1];
+    *geodes = (*geodes).max(baseline);
+    if s.minutes == 0 || baseline + (s.minutes - 1) * s.minutes / 2 <= *geodes {
+        return;
     }
-    'outer: for i in a.saturating_sub(1)..N.min(a + 2) {
-        if i < a && b {
-            continue;
-        }
+    'outer: for i in (0..N).rev() {
         let mut wait = 0;
         for j in 0..N {
             let c = m[i][j];
@@ -64,19 +62,17 @@ fn best(m: &Matrix, s: State, a: usize, b: bool) -> usize {
                 resources[j] += (s.minutes - minutes) * s.robots[j];
                 resources[j] -= m[i][j];
             }
-            geodes = geodes.max(best(
+            search(
                 m,
+                geodes,
                 State {
                     minutes,
                     robots,
                     resources,
                 },
-                i,
-                i < a || (i == a && b),
-            ));
+            );
         }
     }
-    geodes
 }
 
 pub fn puzzle1(input: &str) -> usize {
@@ -84,17 +80,17 @@ pub fn puzzle1(input: &str) -> usize {
         .into_iter()
         .enumerate()
         .map(|(i, blueprint)| {
-            (i + 1)
-                * best(
-                    &blueprint,
-                    State {
-                        minutes: 24,
-                        robots: [1, 0, 0, 0],
-                        resources: [0; N],
-                    },
-                    0,
-                    false,
-                )
+            let mut geodes = 0;
+            search(
+                &blueprint,
+                &mut geodes,
+                State {
+                    minutes: 24,
+                    robots: [1, 0, 0, 0],
+                    resources: [0; N],
+                },
+            );
+            (i + 1) * geodes
         })
         .sum()
 }
@@ -104,16 +100,17 @@ pub fn puzzle2(input: &str) -> usize {
         .into_iter()
         .take(3)
         .map(|blueprint| {
-            best(
+            let mut geodes = 0;
+            search(
                 &blueprint,
+                &mut geodes,
                 State {
                     minutes: 32,
                     robots: [1, 0, 0, 0],
                     resources: [0; N],
                 },
-                0,
-                false,
-            )
+            );
+            geodes
         })
         .product()
 }
@@ -135,13 +132,11 @@ mod tests {
         assert_eq!(puzzle1(INPUT), 1389);
     }
 
-    #[ignore]
     #[test]
     fn test_puzzle2_example() {
         assert_eq!(puzzle2(EXAMPLE), 56 * 62);
     }
 
-    #[ignore]
     #[test]
     fn test_puzzle2_input() {
         assert_eq!(puzzle2(INPUT), 3003);
