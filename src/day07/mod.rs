@@ -11,31 +11,31 @@ enum Cmd<'a> {
     Ls(Vec<Entry<'a>>),
 }
 
-fn parse(input: &str) -> Option<Vec<Cmd>> {
+fn parse(input: &str) -> Vec<Cmd> {
     use Cmd::*;
     use Entry::*;
     let mut cmds = vec![];
     let mut entries = vec![];
     for line in input.lines().skip(1) {
         let mut words = line.split_whitespace();
-        match words.next()? {
+        match words.next().unwrap() {
             "$" => {
                 if !entries.is_empty() {
                     cmds.push(Ls(entries));
                     entries = vec![];
                 }
-                if let "cd" = words.next()? {
-                    cmds.push(match words.next()? {
+                if let "cd" = words.next().unwrap() {
+                    cmds.push(match words.next().unwrap() {
                         ".." => CdOut,
                         dir => Cd(dir),
                     });
                 }
             }
             left => {
-                let name = words.next()?;
+                let name = words.next().unwrap();
                 entries.push(match left {
                     "dir" => Dir(name),
-                    size => File(size.parse().ok()?, name),
+                    size => File(size.parse().unwrap(), name),
                 });
             }
         }
@@ -43,7 +43,7 @@ fn parse(input: &str) -> Option<Vec<Cmd>> {
     if !entries.is_empty() {
         cmds.push(Ls(entries));
     }
-    Some(cmds)
+    cmds
 }
 
 enum Fs<'a> {
@@ -100,7 +100,7 @@ fn get_total_small(fs: &Fs) -> usize {
 }
 
 pub fn puzzle1(input: &str) -> usize {
-    let cmds = parse(input).unwrap();
+    let cmds = parse(input);
     let mut root = HashMap::new();
     explore(&mut root, &mut cmds.into_iter());
     get_total_small(&Fs::Dir(root))
@@ -125,7 +125,7 @@ fn get_smallest(fs: &Fs, need: usize) -> Option<usize> {
 }
 
 pub fn puzzle2(input: &str) -> usize {
-    let cmds = parse(input).unwrap();
+    let cmds = parse(input);
     let mut root = HashMap::new();
     explore(&mut root, &mut cmds.into_iter());
     let fs = Fs::Dir(root);

@@ -26,10 +26,10 @@ fn parse(input: &str) -> Vec<(isize, Vec<isize>)> {
             )
         })
         .collect();
-    assert_eq!(graph.get(&START).unwrap().0, 0);
+    assert_eq!(graph[&START].0, 0);
     for x in graph.keys().copied().collect::<Vec<_>>() {
         if let Some(((a, m), (b, n))) = {
-            let (rate, tunnels) = graph.get(&x).unwrap();
+            let (rate, tunnels) = &graph[&x];
             if x != START && *rate == 0 && tunnels.len() == 2 {
                 tunnels.iter().map(|(&k, &v)| (k, v)).collect_tuple()
             } else {

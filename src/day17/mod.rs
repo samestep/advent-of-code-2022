@@ -139,7 +139,7 @@ pub fn puzzle2(input: &str) -> usize {
         i += 1;
     }
     let n = falling.chamber.len();
-    let (prev_i, prev_n, _) = contexts.get(&(i % ROCKS.len(), falling.j)).unwrap();
+    let (prev_i, prev_n, _) = contexts[&(i % ROCKS.len(), falling.j)];
     let big_n: usize = 1000000000000 - i;
     let big = (big_n / (i - prev_i)) * (n - prev_n);
     let end = big_n % (i - prev_i);
