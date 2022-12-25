@@ -67,8 +67,8 @@ fn walk(
     let mut facing = R;
     for movement in movements {
         match movement {
-            Go(n) => {
-                for _ in 0..*n {
+            &Go(n) => {
+                for _ in 0..n {
                     let (mut i, mut j) = match facing {
                         R => (y, x + 1),
                         D => (y + 1, x),
@@ -85,15 +85,19 @@ fn walk(
                 }
             }
             Turn(wise) => {
-                facing = match (facing, wise) {
-                    (R, Wise::L) => U,
-                    (D, Wise::L) => R,
-                    (L, Wise::L) => D,
-                    (U, Wise::L) => L,
-                    (R, Wise::R) => D,
-                    (D, Wise::R) => L,
-                    (L, Wise::R) => U,
-                    (U, Wise::R) => R,
+                facing = match wise {
+                    Wise::L => match facing {
+                        R => U,
+                        D => R,
+                        L => D,
+                        U => L,
+                    },
+                    Wise::R => match facing {
+                        R => D,
+                        D => L,
+                        L => U,
+                        U => R,
+                    },
                 }
             }
         }
