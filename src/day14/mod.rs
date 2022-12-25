@@ -11,10 +11,10 @@ fn parse(input: &str) -> HashMap<(usize, usize), char> {
     cave.insert((X_SAND, Y_SAND), '+');
     for line in input.lines() {
         let mut it = line.split(" -> ").map(|point| {
-            let caps = re.captures(point).unwrap();
+            let cap = re.captures(point).unwrap();
             (
-                caps[1].parse::<usize>().unwrap(),
-                caps[2].parse::<usize>().unwrap(),
+                cap[1].parse::<usize>().unwrap(),
+                cap[2].parse::<usize>().unwrap(),
             )
         });
         let (mut x0, mut y0) = it.next().unwrap();

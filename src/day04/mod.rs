@@ -16,15 +16,15 @@ fn parse(input: &str) -> Vec<Pair> {
     input
         .lines()
         .map(|line| {
-            let caps = re.captures(line).unwrap();
+            let cap = re.captures(line).unwrap();
             Pair {
                 first: Range {
-                    start: caps[1].parse().unwrap(),
-                    end: caps[2].parse().unwrap(),
+                    start: cap[1].parse().unwrap(),
+                    end: cap[2].parse().unwrap(),
                 },
                 second: Range {
-                    start: caps[3].parse().unwrap(),
-                    end: caps[4].parse().unwrap(),
+                    start: cap[3].parse().unwrap(),
+                    end: cap[4].parse().unwrap(),
                 },
             }
         })

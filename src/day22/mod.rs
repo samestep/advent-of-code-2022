@@ -1,3 +1,5 @@
+use regex::Regex;
+
 enum Wise {
     L,
     R,
@@ -13,51 +15,29 @@ use Movement::*;
 fn parse(input: &str) -> (Vec<Vec<Option<bool>>>, Vec<Movement>) {
     let lines: Vec<_> = input.lines().collect();
     let i = lines.len() - 2;
+    let w = lines[..i].iter().map(|line| line.len()).max().unwrap();
     (
-        {
-            let w = lines[..i].iter().map(|line| line.len()).max().unwrap();
-            lines[..i]
-                .iter()
-                .map(|line| {
-                    let mut row = vec![None; w];
-                    for (j, c) in line.chars().enumerate() {
-                        if c != ' ' {
-                            row[j] = Some(c == '#');
-                        }
-                    }
-                    row
-                })
-                .collect()
-        },
-        {
-            let mut movements = vec![];
-            let mut n = 0;
-            for c in lines[i + 1].chars() {
-                match c {
-                    'L' => {
-                        if n != 0 {
-                            movements.push(Go(n));
-                            n = 0;
-                        }
-                        movements.push(Turn(Wise::L));
-                    }
-                    'R' => {
-                        if n != 0 {
-                            movements.push(Go(n));
-                            n = 0;
-                        }
-                        movements.push(Turn(Wise::R));
-                    }
-                    d => {
-                        n = n * 10 + d.to_digit(10).unwrap() as usize;
+        lines[..i]
+            .iter()
+            .map(|line| {
+                let mut row = vec![None; w];
+                for (j, c) in line.chars().enumerate() {
+                    if c != ' ' {
+                        row[j] = Some(c == '#');
                     }
                 }
-            }
-            if n != 0 {
-                movements.push(Go(n))
-            }
-            movements
-        },
+                row
+            })
+            .collect(),
+        Regex::new(r"\d+|[LR]")
+            .unwrap()
+            .captures_iter(lines[i + 1])
+            .map(|cap| match &cap[0] {
+                "L" => Turn(Wise::L),
+                "R" => Turn(Wise::R),
+                n => Go(n.parse().unwrap()),
+            })
+            .collect(),
     )
 }
 
@@ -72,9 +52,9 @@ enum Facing {
 use Facing::*;
 
 fn get(grid: &[Vec<Option<bool>>], x: isize, y: isize) -> Option<bool> {
-    grid.get(y as usize)
-        .and_then(|row| row.get(x as usize).copied())
-        .flatten()
+    let i: usize = y.try_into().ok()?;
+    let j: usize = x.try_into().ok()?;
+    grid.get(i).and_then(|row| row.get(j).copied()).flatten()
 }
 
 fn walk(

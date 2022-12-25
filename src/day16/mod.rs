@@ -13,12 +13,12 @@ fn parse(input: &str) -> Vec<(isize, Vec<isize>)> {
     let mut graph: HashMap<Name, (isize, HashMap<Name, isize>)> = input
         .lines()
         .map(|line| {
-            let caps = re.captures(line).unwrap();
+            let cap = re.captures(line).unwrap();
             (
-                caps[1].chars().collect_tuple().unwrap(),
+                cap[1].chars().collect_tuple().unwrap(),
                 (
-                    caps[2].parse().unwrap(),
-                    caps[3]
+                    cap[2].parse().unwrap(),
+                    cap[3]
                         .split(", ")
                         .map(|name| (name.chars().collect_tuple().unwrap(), 1))
                         .collect(),

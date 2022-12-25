@@ -38,11 +38,11 @@ fn parse(input: &str) -> Drawing {
     let mut moves = vec![];
     let re = Regex::new(r"^move (\d+) from (\d+) to (\d+)$").unwrap();
     for &line in &lines[(i + 1)..] {
-        let caps = re.captures(line).unwrap();
+        let cap = re.captures(line).unwrap();
         moves.push(Move {
-            quantity: caps[1].parse().unwrap(),
-            from: caps[2].parse::<usize>().unwrap() - 1,
-            to: caps[3].parse::<usize>().unwrap() - 1,
+            quantity: cap[1].parse().unwrap(),
+            from: cap[2].parse::<usize>().unwrap() - 1,
+            to: cap[3].parse::<usize>().unwrap() - 1,
         });
     }
 

@@ -6,10 +6,10 @@ fn parse(input: &str) -> impl Iterator<Item = ((isize, isize), (isize, isize))> 
     let re =
         Regex::new(r"^Sensor at x=(.+), y=(.+): closest beacon is at x=(.+), y=(.+)$").unwrap();
     input.lines().map(move |line| {
-        let caps = re.captures(line).unwrap();
+        let cap = re.captures(line).unwrap();
         (
-            (caps[1].parse().unwrap(), caps[2].parse().unwrap()),
-            (caps[3].parse().unwrap(), caps[4].parse().unwrap()),
+            (cap[1].parse().unwrap(), cap[2].parse().unwrap()),
+            (cap[3].parse().unwrap(), cap[4].parse().unwrap()),
         )
     })
 }

@@ -6,24 +6,24 @@ type Vector = [usize; N];
 type Matrix = [Vector; N];
 
 fn parse(input: &str) -> Vec<Matrix> {
-    let re = Regex::new(concat!(
+    Regex::new(concat!(
         r"(?m)Blueprint \d+:",
         r"\s+Each ore robot costs (\d+) ore.",
         r"\s+Each clay robot costs (\d+) ore.",
         r"\s+Each obsidian robot costs (\d+) ore and (\d+) clay.",
         r"\s+Each geode robot costs (\d+) ore and (\d+) obsidian.",
     ))
-    .unwrap();
-    re.captures_iter(input)
-        .map(|caps| {
-            [
-                [caps[1].parse().unwrap(), 0, 0, 0],
-                [caps[2].parse().unwrap(), 0, 0, 0],
-                [caps[3].parse().unwrap(), caps[4].parse().unwrap(), 0, 0],
-                [caps[5].parse().unwrap(), 0, caps[6].parse().unwrap(), 0],
-            ]
-        })
-        .collect()
+    .unwrap()
+    .captures_iter(input)
+    .map(|cap| {
+        [
+            [cap[1].parse().unwrap(), 0, 0, 0],
+            [cap[2].parse().unwrap(), 0, 0, 0],
+            [cap[3].parse().unwrap(), cap[4].parse().unwrap(), 0, 0],
+            [cap[5].parse().unwrap(), 0, cap[6].parse().unwrap(), 0],
+        ]
+    })
+    .collect()
 }
 
 struct State {

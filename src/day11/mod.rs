@@ -60,15 +60,15 @@ fn parse(input: &str) -> Vec<Monkey> {
                     .map(|s| s.parse().unwrap())
                     .collect(),
                 operation: {
-                    let caps = re_operation.captures(lines[j + 2]).unwrap();
+                    let cap = re_operation.captures(lines[j + 2]).unwrap();
                     Operation {
-                        left: parse_operand(&caps[1]),
-                        operator: match &caps[2] {
+                        left: parse_operand(&cap[1]),
+                        operator: match &cap[2] {
                             "+" => Operator::Plus,
                             "*" => Operator::Times,
                             _ => panic!("unknown operator"),
                         },
-                        right: parse_operand(&caps[3]),
+                        right: parse_operand(&cap[3]),
                     }
                 },
                 test: re_test.captures(lines[j + 3]).unwrap()[1].parse().unwrap(),
