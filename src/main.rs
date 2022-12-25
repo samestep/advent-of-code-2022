@@ -24,23 +24,14 @@ mod day23;
 mod day24;
 mod day25;
 
-use std::fs;
-
-use clap::Parser;
-
-#[derive(Parser)]
-struct Args {
-    day: u8,
-    puzzle: u8,
-    input: String,
-    extra: Vec<String>,
-}
+use std::{env, fs};
 
 fn main() {
-    let args = Args::parse();
-    let input = fs::read_to_string(args.input).unwrap();
-
-    let answer = match (args.day, args.puzzle) {
+    let mut args = env::args().skip(1);
+    let puzzle = args.next().unwrap().parse().unwrap();
+    let day = args.next().unwrap().parse().unwrap();
+    let input = fs::read_to_string(args.next().unwrap()).unwrap();
+    let answer = match (puzzle, day) {
         (1, 1) => day01::puzzle1(&input).to_string(),
         (1, 2) => day01::puzzle2(&input).to_string(),
 
@@ -83,8 +74,8 @@ fn main() {
         (14, 1) => day14::puzzle1(&input).to_string(),
         (14, 2) => day14::puzzle2(&input).to_string(),
 
-        (15, 1) => day15::puzzle1(&input, args.extra[0].parse().unwrap()).to_string(),
-        (15, 2) => day15::puzzle2(&input, args.extra[0].parse().unwrap()).to_string(),
+        (15, 1) => day15::puzzle1(&input, args.next().unwrap().parse().unwrap()).to_string(),
+        (15, 2) => day15::puzzle2(&input, args.next().unwrap().parse().unwrap()).to_string(),
 
         (16, 1) => day16::puzzle1(&input).to_string(),
         (16, 2) => day16::puzzle2(&input).to_string(),
@@ -115,8 +106,7 @@ fn main() {
 
         (25, 1) => day25::puzzle1(&input),
 
-        _ => panic!("no puzzle {} for day {}", args.puzzle, args.day),
+        _ => panic!("no puzzle {} for day {}", puzzle, day),
     };
-
-    println!("{}", answer);
+    println!("{}", answer.trim_end());
 }

@@ -5,6 +5,5 @@ publish = false
 version = "0.1.0"
 
 [dependencies]
-clap = {version = "4", features = ["derive"]}
 itertools = "0.10"
 regex = "1"
